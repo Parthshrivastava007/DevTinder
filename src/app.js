@@ -2,6 +2,26 @@ const express = require("express");
 
 const app = express();
 
+// Usage of next()
+
+app.get(
+  "/user",
+  (req, res, next) => {
+    console.log("Handling user 1");
+    next();
+    // res.send("Response");
+  },
+  (req, res, next) => {
+    console.log("Handling user 2");
+    // res.send("Response 2");
+    next();
+  },
+  (req, res, next) => {
+    console.log("Handling user 2");
+    res.send("Response 3");
+  },
+);
+
 // app.use("/", (req, res) => {
 //   res.send("Hello!")
 // })
@@ -11,10 +31,10 @@ const app = express();
 //   res.send("Hello from user");
 // });
 
-app.get("/user/:userId", (req, res) => {
-  console.log(req.params);
-  res.send("Hello from user");
-});
+// app.get("/user/:userId", (req, res) => {
+//   console.log(req.params);
+//   res.send("Hello from user");
+// });
 
 // app.get("/user", (req, res) => {
 //   res.send({ firstname: "Parth", lastname: "Shrivastava" });
