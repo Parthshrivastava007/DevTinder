@@ -4,6 +4,13 @@ const app = express();
 
 const { adminAuth } = require("../middlewares/auth");
 
+app.use("/user", (err, req, res, next) => {
+  if (err) {
+    res.status(500).send("Something went wrong!!");
+  }
+});
+
+/*
 app.use("/admin", adminAuth);
 
 app.get("/admin/getAllData", adminAuth, (req, res) => {
@@ -13,6 +20,7 @@ app.get("/admin/getAllData", adminAuth, (req, res) => {
 app.get("/admin/deleteAllData", adminAuth, (req, res) => {
   res.send("Delete all admin Data");
 });
+*/
 
 /*
 // Usage of next()
