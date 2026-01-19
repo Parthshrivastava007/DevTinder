@@ -1,16 +1,44 @@
 const express = require("express");
-
+const connectDB = require("../config/db");
 const app = express();
+const User = require("../models/User");
+// const { adminAuth } = require("../middlewares/auth");
 
-const { adminAuth } = require("../middlewares/auth");
+app.post("/signUp", async (req, res, err) => {
+  const user = new User({
+    firstName: "Parth",
+    lastName: "Shrivastava",
+    emailId: "parth.shri123@gmai.com",
+    age: 23,
+    password: "p@rth123",
+  });
 
-app.use("/user", (err, req, res, next) => {
+  try {
+    await user.save();
+    res.send("User added Sucessfully!!");
+  } catch (err) {
+    res.status(400).send("User cannot be added");
+  }
+});
+
+connectDB()
+  .then(() => {
+    console.log("Database Connected Successfully");
+    app.listen(3000, () => {
+      console.log("Server successfully created on port Number 3000");
+    });
+  })
+  .catch(() => {
+    console.log("Database cannot connected successfully");
+  });
+
+/*
+  app.use("/user", (err, req, res, next) => {
   if (err) {
     res.status(500).send("Something went wrong!!");
   }
 });
 
-/*
 app.use("/admin", adminAuth);
 
 app.get("/admin/getAllData", adminAuth, (req, res) => {
@@ -20,9 +48,7 @@ app.get("/admin/getAllData", adminAuth, (req, res) => {
 app.get("/admin/deleteAllData", adminAuth, (req, res) => {
   res.send("Delete all admin Data");
 });
-*/
 
-/*
 // Usage of next()
 app.use("/", (req, res, next) => {
   console.log("Hello");
@@ -45,55 +71,46 @@ app.get("/user", [
     res.send("Response 3");
   },
 ]);
-*/
 
-/*
-// app.use("/", (req, res) => {
-//   res.send("Hello!")
-// })
+app.use("/", (req, res) => {
+  res.send("Hello!");
+});
 
-// app.get("/user", (req, res) => {
-//   console.log(req.query);
-//   res.send("Hello from user");
-// });
+app.get("/user", (req, res) => {
+  console.log(req.query);
+  res.send("Hello from user");
+});
 
-// app.get("/user/:userId", (req, res) => {
-//   console.log(req.params);
-//   res.send("Hello from user");
-// });
+app.get("/user/:userId", (req, res) => {
+  console.log(req.params);
+  res.send("Hello from user");
+});
 
-// app.get("/user", (req, res) => {
-//   res.send({ firstname: "Parth", lastname: "Shrivastava" });
-// });
+app.get("/user", (req, res) => {
+  res.send({ firstname: "Parth", lastname: "Shrivastava" });
+});
 
-// app.post("/user", (req, res) => {
-//   res.send("Data saved Sucessfully");
-// });
+app.post("/user", (req, res) => {
+  res.send("Data saved Sucessfully");
+});
 
-// app.delete("/user", (req, res) => {
-//   res.send("Data deleted Sucessfully");
-// });
+app.delete("/user", (req, res) => {
+  res.send("Data deleted Sucessfully");
+});
 
-// app.get(/a/, (req, res) => {
-//   res.send("Hello from a");
-// });
+app.get(/a/, (req, res) => {
+  res.send("Hello from a");
+});
 
+app.use("/hello", (req, res) => {
+  res.send("Hello Hello!");
+});
 
-
-// app.use("/hello", (req, res) => {
-//   res.send("Hello Hello!");
-// });
-
-
-// app.use((req, res) => {
-//   res.send("Hello from ExpressJS");
-// });
-*/
+app.use((req, res) => {
+  res.send("Hello from ExpressJS");
+});
 
 app.use("/test", (req, res) => {
   res.send("Hello from test ExpressJS");
 });
-
-app.listen(3000, () => {
-  console.log("Server successfully created");
-});
+*/
