@@ -4,8 +4,12 @@ const app = express();
 
 // Usage of next()
 
-app.get(
-  "/user",
+app.use("/", (req, res, next) => {
+  console.log("Hello");
+  next();
+});
+
+app.get("/user", [
   (req, res, next) => {
     console.log("Handling user 1");
     next();
@@ -20,8 +24,9 @@ app.get(
     console.log("Handling user 2");
     res.send("Response 3");
   },
-);
+]);
 
+/*
 // app.use("/", (req, res) => {
 //   res.send("Hello!")
 // })
@@ -52,17 +57,21 @@ app.get(
 //   res.send("Hello from a");
 // });
 
-app.use("/test", (req, res) => {
-  res.send("Hello from test ExpressJS");
-});
+
 
 // app.use("/hello", (req, res) => {
 //   res.send("Hello Hello!");
 // });
 
+
 // app.use((req, res) => {
 //   res.send("Hello from ExpressJS");
 // });
+*/
+
+app.use("/test", (req, res) => {
+  res.send("Hello from test ExpressJS");
+});
 
 app.listen(3000, () => {
   console.log("Server successfully created");
