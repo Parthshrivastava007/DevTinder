@@ -2,8 +2,20 @@ const express = require("express");
 
 const app = express();
 
-// Usage of next()
+const { adminAuth } = require("../middlewares/auth");
 
+app.use("/admin", adminAuth);
+
+app.get("/admin/getAllData", adminAuth, (req, res) => {
+  res.send("Get All Admin Data");
+});
+
+app.get("/admin/deleteAllData", adminAuth, (req, res) => {
+  res.send("Delete all admin Data");
+});
+
+/*
+// Usage of next()
 app.use("/", (req, res, next) => {
   console.log("Hello");
   next();
@@ -25,6 +37,7 @@ app.get("/user", [
     res.send("Response 3");
   },
 ]);
+*/
 
 /*
 // app.use("/", (req, res) => {
