@@ -4,20 +4,83 @@ const app = express();
 const User = require("../models/User");
 // const { adminAuth } = require("../middlewares/auth");
 
+app.use(express.json());
+
 app.post("/signUp", async (req, res, err) => {
-  const user = new User({
-    firstName: "Parth",
-    lastName: "Shrivastava",
-    emailId: "parth.shri123@gmai.com",
-    age: 23,
-    password: "p@rth123",
-  });
+  const user = new User(req.body);
+
+  // const user = new User({
+  //   firstName: "Bruno",
+  //   lastName: "Fernandes",
+  //   emailId: "bruno.fernandes@gmail.com",
+  //   age: 31,
+  //   password: "ilmu",
+  // });
 
   try {
     await user.save();
     res.send("User added Sucessfully!!");
   } catch (err) {
     res.status(400).send("User cannot be added");
+  }
+});
+
+app.get("/user", async (req, res) => {
+  const userEmail = req.body.emailId;
+
+  try {
+    const users = await User.find({ emailId: userEmail });
+    res.send(users);
+    if (users.length === 0) {
+      res.status(404).send("User Not found");
+    }
+  } catch (error) {
+    res.status(400).send("Something went wrong");
+  }
+});
+
+app.get("/feed", async (req, res) => {
+  try {
+    const allUsers = await User.find({});
+    res.json(allUsers);
+  } catch (error) {
+    res.status(400).json("Something went wrong");
+  }
+});
+
+app.delete("/delete", async (req, res) => {
+  const { emailId } = req.body;
+
+  try {
+    if (!emailId) {
+      return res.status(400).send("emailId is required");
+    }
+
+    const user = await User.findOneAndDelete({ emailId });
+
+    if (!user) {
+      return res.status(404).send("User Not Found");
+    }
+
+    res.status(200).send("User deleted Sucessfully");
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send("Something went wrong");
+  }
+});
+
+app.patch("/updateUser", async (req, res) => {
+  const userId = req.body.userId;
+  const data = req.body;
+  try {
+    const user = await User.findByIdAndUpdate({ _id: userId }, data, {
+      returnDocument: "after",
+      runValidators: true,
+    });
+    console.log(user);
+    res.send("User Updated sucessfully");
+  } catch (err) {
+    res.status(400).send("Update Failed: " + err.message);
   }
 });
 
