@@ -38,13 +38,15 @@ app.post("/login", async (req, res) => {
     if (!user) {
       throw new Error("Invalid Credentials");
     }
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = await User.isValidPassword(password);
 
     if (isPasswordValid) {
-      const token = jwt.sign({ _id: user._id }, "P@rth123");
+      const token = await user.getJWT();
+
       res.cookie("token", token, {
         expires: new Date(Date.now() + 7 * 3600000),
       });
+
       res.send("Login Successful");
     } else {
       throw new Error("Invalid Credentials");
