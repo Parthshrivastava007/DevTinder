@@ -27,11 +27,11 @@ const userSchema = new mongoose.Schema(
       trim: true,
       lowercase: true,
       unique: true,
-      validate(value) {
-        if (!validator.isEmail(value)) {
-          throw new Error("Emaild Id is not valid");
-        }
-      },
+      // validate(value) {
+      //   if (!validator.isEmail(value)) {
+      //     throw new Error("Emaild Id is not valid");
+      //   }
+      // },
     },
     gender: {
       type: String,

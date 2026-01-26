@@ -2,22 +2,27 @@ const express = require("express");
 const connectDB = require("../config/db");
 const app = express();
 const User = require("../models/User");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const cookieParser = require("cookie-parser");
+const { userAuth } = require("../middlewares/auth");
 // const { adminAuth } = require("../middlewares/auth");
+const { signUpValidation } = require("../utlis/validations");
 
 app.use(express.json());
+app.use(cookieParser());
 
 app.post("/signUp", async (req, res, err) => {
-  const user = new User(req.body);
-
-  // const user = new User({
-  //   firstName: "Bruno",
-  //   lastName: "Fernandes",
-  //   emailId: "bruno.fernandes@gmail.com",
-  //   age: 31,
-  //   password: "ilmu",
-  // });
-
   try {
+    //Validating the data
+    signUpValidation(req);
+
+    //Password validation
+    const { password } = req.body;
+    const hashedPassword = await bcrypt.hash(password, 10);
+    req.body.password = hashedPassword;
+
+    const user = new User(req.body);
     await user.save();
     res.send("User added Sucessfully!!");
   } catch (err) {
@@ -25,6 +30,60 @@ app.post("/signUp", async (req, res, err) => {
   }
 });
 
+app.post("/login", async (req, res) => {
+  try {
+    const { emailId, password } = req.body;
+
+    const user = await User.findOne({ emailId: emailId });
+    if (!user) {
+      throw new Error("Invalid Credentials");
+    }
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (isPasswordValid) {
+      const token = jwt.sign({ _id: user._id }, "P@rth123");
+      res.cookie("token", token, {
+        expires: new Date(Date.now() + 7 * 3600000),
+      });
+      res.send("Login Successful");
+    } else {
+      throw new Error("Invalid Credentials");
+    }
+  } catch (err) {
+    res.status(400).send("ERROR: " + err.message);
+  }
+});
+
+app.get("/profile", userAuth, async (req, res) => {
+  try {
+    const user = req.user;
+    res.send(user);
+  } catch (err) {
+    res.status(404).send("ERROR: " + err.message);
+  }
+});
+
+app.post("/sendConnectionRequest", userAuth, async (req, res) => {
+  try {
+    const user = req.user;
+    res.send(user.firstName + "sent the connection request");
+  } catch (err) {
+    res.status(404).send("ERROR: " + err.message);
+  }
+});
+
+connectDB()
+  .then(() => {
+    console.log("Database Connected Successfully");
+    app.listen(3000, () => {
+      console.log("Server successfully created on port Number 3000");
+    });
+  })
+  .catch(() => {
+    console.log("Database cannot connected successfully");
+  });
+
+/*
 app.get("/user", async (req, res) => {
   const userEmail = req.body.emailId;
 
@@ -95,17 +154,7 @@ app.patch("/updateUser/:userId", async (req, res) => {
     res.status(400).send("Update Failed: " + err.message);
   }
 });
-
-connectDB()
-  .then(() => {
-    console.log("Database Connected Successfully");
-    app.listen(3000, () => {
-      console.log("Server successfully created on port Number 3000");
-    });
-  })
-  .catch(() => {
-    console.log("Database cannot connected successfully");
-  });
+*/
 
 /*
   app.use("/user", (err, req, res, next) => {
