@@ -9,6 +9,7 @@ const { userAuth } = require("../middlewares/auth");
 // const { adminAuth } = require("../middlewares/auth");
 const { signUpValidation } = require("../utlis/validations");
 
+
 app.use(express.json());
 app.use(cookieParser());
 
@@ -38,7 +39,7 @@ app.post("/login", async (req, res) => {
     if (!user) {
       throw new Error("Invalid Credentials");
     }
-    const isPasswordValid = await User.isValidPassword(password);
+    const isPasswordValid = await user.isValidPassword(password);
 
     if (isPasswordValid) {
       const token = await user.getJWT();
