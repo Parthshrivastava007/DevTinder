@@ -1,4 +1,5 @@
 ## authRouter
+
 - POST /signup
 - POST /login
 - POST /Logout
